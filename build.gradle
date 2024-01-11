@@ -9,7 +9,7 @@ version = '0.0.1-SNAPSHOT'
 
 jar {
 	manifest {
-		attributes 'Main-Class': 'com.app.configserver.ConfigServerApplication'
+		attributes 'Main-Class': 'com.app.eureka.EurekaApplication'
 	}
 }
 
