@@ -1,0 +1,49 @@
+name: Deploy Dev
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Git Semantic Version
+      uses: PaulHatch/semantic-version@v4.0.3
+      with:
+        major_pattern: "major:"
+        minor_pattern: "feat:"
+        format: "${major}.${minor}.${patch}-prerelease"
+      id: version
+        
+    - name: Docker login
+      env:
+        DOCKER_USER:  ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD:  ${{ secrets.DOCKER_PASSWORD }}
+        
+      run: |
+        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+
+    - name: Build Docker Image
+      env:
+        NEW_VERSION: ${{ steps.version.outputs.version }}
+      run: |
+        docker build -t alberth1414/eureka-server:$NEW_VERSION .
+        docker build -t alberth1414/eureka-server:latest .
+        
+    - name: Push Docker Image
+      env:
+        NEW_VERSION: ${{ steps.version.outputs.version }}
+      run: |
+        docker push alberth1414/eureka-server:$NEW_VERSION
+        docker push alberth1414/eureka-server:latest
