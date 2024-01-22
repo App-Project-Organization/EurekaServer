@@ -37,3 +37,20 @@ spec:
       port: 8761
       targetPort: 8761
   type: LoadBalancer
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: eureka-ingress
+spec:
+  rules:
+  - host: eurekaserver.sytes.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: eureka-service
+            port:
+              number: 8761
